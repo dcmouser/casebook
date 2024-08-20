@@ -1,0 +1,8 @@
+{
+    "python.analysis.extraPaths": [
+        "code"
+    ],
+    "python.analysis.useImportHeuristic": true,
+    "notebook.output.textLineLimit": 9999,
+    "terminal.integrated.scrollback": 5000
+}

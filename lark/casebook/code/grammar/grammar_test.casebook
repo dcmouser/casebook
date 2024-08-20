@@ -1,0 +1,45 @@
+Casebook v2: The Wrong Book
+
+
+Preliminary text
+
+# OPTIONS $(autoid=true)
+$set(info.name, “wrongBook”)
+$set(info.clocked, true)
+$set(testvar, "abc_" + info.name + "_def")
+
+# SETUP
+$defineTag("cond.compassion")
+
+
+# LEADS
+
+## Lead1
+
+
+// multi target function call
+//$myfunc(age=24): {abc},{def}, {geh}
+
+
+// simple iff
+$if (info.clocked): {
+	$include(path="clocked.md")
+}
+
+
+
+// let's try a multi step if
+$if (true): {
+	$print("true")
+} $elif (false): {
+	$print("false")
+} $else: {
+  $print("its else.")
+}
+
+
+$for(index in $range(0,10)): { $print("Hello" + $castNumberToString(index))}
+
+//$myfunc(age = {"yes":0, "no": 1}): { ok! }
+
+Ok.

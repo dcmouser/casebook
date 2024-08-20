@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "casebook"
+version = "0.2.0"
+description = ""
+authors = ["jesse reichler <jessereichler@gmail.com>"]
+readme = "README.md"
+packages = [{include = "code"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+lark = {extras = ["regex"], version = "^1.1.9"}
+pydot = "^2.0.0"
+graphviz = "^0.20.3"
+mistletoe = "^1.4.0"
+pylatex = "^1.4.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
