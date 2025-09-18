@@ -108,7 +108,6 @@ cd ~/django/casebook/hldjango/code
 poetry run python manage.py initGameGroupAndPermission --settings=hldjango.settingsdir.standalone_docker
 poetry run python manage.py initSiteGadminGroupAndPermission --settings=hldjango.settingsdir.standalone_docker
 poetry run python manage.py verifyOrAddInsecureTestingSuperuser --settings=hldjango.settingsdir.standalone_docker
-
 ```
 
 ## 8.
@@ -173,7 +172,7 @@ From here, do the following:
 - **D** (directories): change the main TeX directory to: `~/texlive/2025`.
 
 __*Note:*__ The location of the main TeX directory is a personal choice. By default, the main directory is set to `/usr/local/texlive/2025`, but, in my case, the installer says that this is "not writable or not allowed". Rather than modifying permissions, the [documentation](https://www.tug.org/texlive/doc/texlive-en/texlive-en.html#x1-250003.2.3) notes:
-> A reasonable alternative destination is a directory under your home, especially if you will be the sole user. Use ‘~’ to indicate this, as in ‘~/texlive/2025’.
+> A reasonable alternative destination is a directory under your home, especially if you will be the sole user. Use ‘\~’ to indicate this, as in ‘~/texlive/2025’.
 - **O** (options): remove `install font/macro doc tree` and `install font/macro source tree`.
 
 __*Note:*__ The config should now show that the install size will be ~116 MB. See [Appendix A](#appendix-a) for the full output.
@@ -320,8 +319,7 @@ __*Note:*__ creating a new game creates the individual game page but does not ye
 - Click the `Generated files` button, which takes you to, for example, the 'Generated game files for "Test Game Name"' page
 - Click one of the generation buttons
 
-The generated PDFs etc. are stored in: `
-~/django/casebook/hldjango/media/games/<gameid-[a-z][0-9]>`
+The generated PDFs etc. are stored in: `~/django/casebook/hldjango/media/games/<gameid-[a-z][0-9]>`
 
 
 ## Appendix A
