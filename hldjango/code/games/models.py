@@ -32,7 +32,8 @@ import os
 import datetime
 import uuid
 import logging
-
+import datetime
+import pathlib
 
 
 
@@ -1007,12 +1008,15 @@ class GameFile(models.Model):
         upload_to = calculateGameFileUploadPathRuntimeRelative, validators=[validateGameFile]
     )
 
+    # new fields
+    fileName = models.CharField(max_length=255, blank=True)
+    fileSize = models.BigIntegerField(null=True, blank=True)  # in bytes
+    fileDate = models.DateTimeField(null=True, blank=True)    # from storage
 
     # optinal label
     note = models.CharField(
         max_length=80, help_text="Internal comments (optional)", default="", blank=True
     )
-
 
 
     # helpers
@@ -1054,6 +1058,32 @@ class GameFile(models.Model):
         return self.filefield.name
 
 
+    # need to override save() method to grab extra fields like fileName, fileSize, and fileData
+    def save(self, *args, **kwargs):
+        if self.filefield:
+            path = self.filefield.name
+            full_path = os.path.join(settings.MEDIA_ROOT, path)
+            self.fileName = pathlib.Path(path).name.lower()
+
+            if (False):
+                # get info from file on disk
+                try:
+                    #stat = self.filefield.storage.stat(path)
+                    stat = os.stat(full_path)
+                    self.fileSize = stat.st_size
+                    naive_dt = datetime.datetime.fromtimestamp(stat.st_mtime)
+                    self.fileDate = timezone.make_aware(naive_dt, timezone.get_current_timezone())
+                except (OSError, FileNotFoundError):
+                    # File might not exist yet, especially on first save or if delayed file upload
+                    self.fileSize = None
+                    self.fileDate = None
+                    raise
+            else:
+                # its temporary object at this time, but thats ok we dont want actual file date we want CURRENT date of upload
+                self.fileSize = self.filefield.size
+                self.fileDate = timezone.now()
+
+        super().save(*args, **kwargs)
 
 
 

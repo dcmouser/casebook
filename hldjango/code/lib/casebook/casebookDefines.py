@@ -8,14 +8,24 @@
 
 
 # defines
-DefCbVersion = "4.77"
-DefCbVersionDate = "7/9/25"
+DefCbVersion = "4.83"
+DefCbVersionDate = "8/20/25"
 DefCbVersionString = "v" + DefCbVersion + " (" + DefCbVersionDate + ")"
 DefCbBuildString = "Casebook " + DefCbVersionString
 DefCbAuthorString = "Jesse Reichler <jessereichler@gmail.com>"
 
 # version changes
 DefCbVersionHistory = """
+# v4.83 (8/20/25)
+Added date/size info to game file list, and option to sort on them
+# v4.82 (8/16/25)
+Added layout option to embedFile for pdf embedding, with booklet and stitchedBooklet options
+# v4.81 (8/15/25)
+Building new map with logans art v1
+# v4.79 (7/18/25)
+Fixed bug in new leaddb warning debug report where it wasn't listing all warnings; improved info display
+# v4.78 (7/13/25)
+Added $footnote() function for creating footnotes
 # v4.77 (7/9/25)
 Tweaked the consistent autolead id generation; unfortunately new builds will have different inline lead ids than previous but this should be consistent going forward
 # v4.76 (7/6/25)

@@ -111,11 +111,12 @@ class JrInterpreter:
                 sortSection = note.getSortSection()
                 if (sortSection is None):
                     sortSection = ""
+                # file it by sortsection
                 if (not sortSection in filteredNoteDict["notesDict"]):
                     filteredNoteDict["notesDict"][sortSection] = []
-                    filteredNoteDict["notesDict"][sortSection].append(note)
-                else:
-                    filteredNoteDict["notesList"].append(note)
+                filteredNoteDict["notesDict"][sortSection].append(note)
+                # also always add to flat notesList
+                filteredNoteDict["notesList"].append(note)
                 noteCount += 1
         filteredNoteDict["count"] = noteCount
         filteredNoteDict["notesDict"] = jrfuncs.sortDictByKeys(filteredNoteDict["notesDict"])

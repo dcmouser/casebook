@@ -86,3 +86,6 @@
 
 % for write align leder dot function
 \usepackage{tabularx}
+
+% for footnotes (not currently used)
+%\usepackage{footmisc}

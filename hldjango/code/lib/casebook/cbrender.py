@@ -111,9 +111,12 @@ class CbRenderBase():
         mindMapLabel = self.getMindMapLabel()
         #
         if (mindMapLabel is not None):
-            id = self.getIdPreferAutoId()
-            if (id not in mindMapLabel):
-                nodeLabel = self.getIdPreferAutoId() + "\n" + mindMapLabel
+            idl = self.getIdPreferAutoIdFallbackLabel()
+            if (idl is None):
+                # no id??
+                nodeLabel = "_ANONYMOUS_\n" + mindMapLabel
+            elif (idl not in mindMapLabel):
+                nodeLabel = idl + "\n" + mindMapLabel
             else:
                 nodeLabel = mindMapLabel
         else:

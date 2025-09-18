@@ -7,11 +7,13 @@ from django import template
 from django.conf import settings
 from django.urls import reverse, NoReverseMatch
 from django.utils.encoding import escape_uri_path
+from django.utils import timezone
 
 # python modules
 import os
 
 from lib.jr import jrdfuncs
+from lib.jr import jrfuncs
 
 
 # register template tags / functions
@@ -120,3 +122,13 @@ def userIsAuthenticatedAndGadmin(user):
     # Implement your logic here
     return jrdfuncs.userIsAuthenticatedAndGadmin(user)
 
+
+
+@register.filter
+def formatFileSize(value):
+    return jrfuncs.niceFileSizeStr(value)
+
+@register.filter
+def formatFileDate(value):
+    value = timezone.localtime(value)
+    return jrfuncs.niceDayDateTimeStr(value, True, False)

@@ -112,6 +112,34 @@ class CbDeferredBlockAbsorbPreviousNewline(CbDeferredBlock):
 
         # do nothing
         return ["", None, None]
+
+
+class CbDeferredBlockAbsorbPreviousWhitespace(CbDeferredBlock):
+    def __init__(self, astloc, entryp, leadp):
+        super().__init__(astloc, entryp, leadp)
+
+    def renderToLatexString(self, env, renderDoc, lead, parentSection, priorMarkdownText, nextBlock):
+        # we want to add a period IFF we are followed by a newline
+
+        if (True):
+            slen = len(priorMarkdownText)
+            i = slen
+            while (i>=0):
+                i -= 1
+                c = priorMarkdownText[i]
+                if (not c.isspace()):
+                    break
+            if (i==slen-1):
+                # full string do nothing
+                return ["", priorMarkdownText, None]
+            elif (i==-1):
+                # all is whitespace
+                return ["", "", None]
+            # return removed end whitespace
+            return ["", priorMarkdownText[0:i+1], None]
+
+        # do nothing
+        return ["", None, None]
     
 
 

@@ -13,7 +13,7 @@ from .jrastfuncs import isTextLatexVouched, unwrapIfWrappedVal
 from .jrastutilclasses import JrINote, JrIRequest
 
 #
-from .cbdeferblock import CbDeferredBlockRefLead, CbDeferredBlockCaseStats, CbDeferredBlockFollowCase, CbDeferredBlockAbsorbFollowingNewline, CbDeferredBlockAbsorbPreviousNewline
+from .cbdeferblock import CbDeferredBlockRefLead, CbDeferredBlockCaseStats, CbDeferredBlockFollowCase, CbDeferredBlockAbsorbFollowingNewline, CbDeferredBlockAbsorbPreviousNewline, CbDeferredBlockAbsorbPreviousWhitespace
 # helpers for funcs
 from .cbfuncs_core_support import calcInlineLeadLabel, parseTagListArg, buildLatexMarkCheckboxSentence, wrapInLatexBox, wrapInLatexBoxJustStart, wrapInLatexBoxJustEnd, generateLatexForSymbol, generateLatexForDivider, generateLatexRuleThenLineBreak, convertHoursToNiceHourString, generateLatexBreak, generateImageEmbedLatex, generateLatexForPageStyle, generateLatexCalendar
 from .cbfuncs_core_support import parseArgsGenericBoxOptions, isBoxRequested, addBoxToResultsIfAppropriateStart, addBoxToResultsIfAppropriateEnd, addTargetsToResults, addTargetsToResultsIntoCommand, exceptionIfNotRenderMode, addResultsToResults
@@ -24,6 +24,7 @@ from .cbfuncs_core_support import formHelperListBuild, functionRunEffectOnImageP
 from .cbfuncs_core_support import makeMiniPageBlockLatexStart, makeMiniPageBlockLatexEnd, dropCapResults
 from .cbfuncs_core_support import newsLatexFormatHeadlineString, newsLatexFormatBylineString, safeLatexSizeFromUserString
 from .cbfuncs_core_support import irpWhenText, addGainTagTextLineToResults, wrapLatexInColorStart, wrapLatexInColorEnd, buildFormElementTextLatex, generateFormTextLatex
+from .cbfuncs_core_support import makeLatexFootnote
 #
 from .casebookDefines import *
 
@@ -294,6 +295,19 @@ def buildFunctionList():
         ],
         "text", None, None,
         funcReportCoverageLeads
+        ))
+    #---------------------------------------------------------------------------
+
+
+
+    #---------------------------------------------------------------------------
+    functionList.append(CbFunc("footnote", "Create a footnote", [
+            CbParam("text", "Footnote text", None, False, AstValString, False),
+            CbParam("symbol", "Optional symbol index to use instead of arabic number (symbol 1 is asterisk) ", None, True, AstValNumber, False),
+            CbParam("side", "Set to true to show note on side margin instead of at bottom", False, False, AstValBool, False),
+        ],
+        "text", None, None,
+        funcFootnote
         ))
     #---------------------------------------------------------------------------
 
@@ -1429,4 +1443,24 @@ def funcReportCoverageLeads(rmode, env, entryp, leadp, astloc, args, customData,
     req = JrIRequest(theDict)
     env.getInterp().addReportRequest(req)
     return AstValNull(astloc, entryp)
+# ---------------------------------------------------------------------------
+
+
+
+
+# ---------------------------------------------------------------------------
+def funcFootnote(rmode, env, entryp, leadp, astloc, args, customData, funcName, targets):
+    text = args["text"].getWrapped()
+    symbol = args["symbol"].getWrapped()
+    side = args["side"].getWrapped()
+    #
+    latex = makeLatexFootnote(env, text, symbol)
+    #
+    results = JrAstResultList()
+    # delete previous space since footnote func doesnt like that
+    results.flatAdd(CbDeferredBlockAbsorbPreviousWhitespace(astloc, entryp, leadp))
+    # add the latex
+    results.flatAdd(vouchForLatexString(latex, True))
+    #
+    return results
 # ---------------------------------------------------------------------------

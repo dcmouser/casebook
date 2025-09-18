@@ -494,3 +494,15 @@
   \end{tabularx}%
 }
 
+
+
+% footnote helpers
+%\newcommand{\footnoteUsingSymbol}[2]{\footnotemark[#1]\footnotetext[#1]{#2}}
+\newcommand{\footnoteUsingSymbol}[2]{%
+  \begingroup
+  \renewcommand{\thefootnote}{\fnsymbol{footnote}}%
+  \footnotemark[#1]%
+  \footnotetext[#1]{#2}%
+  \endgroup
+}
+

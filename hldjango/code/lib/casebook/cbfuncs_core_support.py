@@ -2267,3 +2267,26 @@ def generateFormTextLatex(lines, widthStr, pt):
     latex += generatelatexLineBreak2()
     return latex
 #---------------------------------------------------------------------------
+
+
+
+#---------------------------------------------------------------------------
+def makeLatexFootnote(env, text, symbol):
+    # create a latex footnote
+    # text is unsafe but in markdown
+    renderer = env.getRenderer()
+    textAsLatex = renderer.convertMarkdownToLatexDontVouch(text, False, True)
+
+    # custom commands (see casebookPreambleMain.latex)
+    if (symbol is None):
+        fCommand = "footnote"
+    else:
+        symbolNum = int(symbol)
+        if (symbolNum<0) or (symbolNum>9):
+            raise Exception("Symbol # for footnote needs to be from 0-9 (got {}).".format(symbol))
+        fCommand = "footnoteUsingSymbol{" + str(symbolNum)+ "}"
+
+    latex = "\\" + fCommand + "{" + textAsLatex + "}\n"
+
+    return latex
+#---------------------------------------------------------------------------

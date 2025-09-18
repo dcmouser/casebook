@@ -1012,7 +1012,11 @@ class HlApi:
                 else:
                     addIt = True
                 for k,v in searchFilter.items():
-                    rowVal = rowProperties[k]
+                    if (k in rowProperties):
+                        rowVal = rowProperties[k]
+                    else:
+                        jrprint("WARNING: In hlapi func searchRows(), key field '{}' not found in row: {}; search filter was: {}.".format(k, rowProperties, searchFilter))
+                        rowVal = None
                     if (rowVal == v):
                         # got a match
                         if (andOr=='or'):

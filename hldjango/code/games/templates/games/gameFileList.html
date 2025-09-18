@@ -14,6 +14,22 @@
 <a href="{% url 'gameFileCreate' game.slug %}" class="btn btn-info" role="button">Upload new files for game</a>
 <hr/>
 
+
+
+<div class="jrpadafter border p-2">
+    <form method="get" id="sortForm">
+        <label for="sort">Sort by:</label>
+        <select name="sort" id="sort" onchange="document.getElementById('sortForm').submit();">
+          <option value="default" {% if current_sort == 'default' %}selected{% endif %}>Default</option>
+          <option value="name" {% if current_sort == 'name' %}selected{% endif %}>Name</option>
+          <option value="date" {% if current_sort == 'date' %}selected{% endif %}>Upload Date</option>
+          <option value="size" {% if current_sort == 'size' %}selected{% endif %}>File size</option>
+        </select>
+    </form>
+    </div>
+    
+
+
 <ul class="gameFileList">
 {% for gamefile in gamefile_list %}
     <li class="gameFileEntry">
@@ -29,6 +45,12 @@
                     <img src="{{ gamefile.filefield.url }}" class="imgThumbnailSized"/>
                 </a>
         {% endif %}
+
+        <ul>
+        <li><b>File size</b>: {{ gamefile.fileSize|formatFileSize }}</li>
+        <li><b>File date</b>: {{ gamefile.fileDate|formatFileDate }}</li>
+        </ul>
+
     </li>
 {% endfor %}
 </ul>

@@ -59,8 +59,8 @@ class GameListView(ListView):
     template_name = "games/gameList.html"
 
     def get_queryset(self, *args, **kwargs): 
-        sort = self.request.GET.get('sort', 'admin')
-        onlyPublic = self.request.GET.get('onlyPublic', False)
+        sort = self.request.GET.get("sort", "default")
+        onlyPublic = self.request.GET.get("onlyPublic", False)
         #
         # basic query
         qs = super(GameListView, self).get_queryset()
@@ -79,14 +79,14 @@ class GameListView(ListView):
         #
         # new sortable
         sort_map = {
-            'owner': {'primary': 'owner'},
-            'title': {'primary': 'title'},
-            'created': {'primary': 'created', 'descending': True},
-            'modified': {'primary': 'modified', 'descending': True},
-            'default': {'primary': 'adminSortKey'},
-            'campaign': {'primary': 'campaignName','secondary':'campaignPosition'}
+            "owner": {"primary": "owner"},
+            "title": {"primary": "title"},
+            "created": {"primary": "created", "descending": True},
+            "modified": {"primary": "modified", "descending": True},
+            "default": {"primary": "adminSortKey"},
+            "campaign": {"primary": "campaignName","secondary":"campaignPosition"}
         }
-        sort_field = sort_map.get(sort, {'primary':'adminSortKey'})
+        sort_field = sort_map.get(sort, {"primary":"adminSortKey"})
         #
         primary = sort_field["primary"]
         secondary = sort_field["secondary"] if ("secondary" in sort_field) else None
@@ -99,15 +99,15 @@ class GameListView(ListView):
             )
         else:
             qs = qs.order_by(
-                OrderBy(NullIf(F(primary), Value('')), descending=descending, nulls_last=True),
-                OrderBy(NullIf(F(secondary), Value('')), nulls_last=True),
+                OrderBy(NullIf(F(primary), Value("")), descending=descending, nulls_last=True),
+                OrderBy(NullIf(F(secondary), Value("")), nulls_last=True),
             )
         return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['current_sort'] = self.request.GET.get('sort', 'admin')
-        context['current_onlyPublic'] = self.request.GET.get('onlyPublic', False)
+        context["current_sort"] = self.request.GET.get("sort", "default")
+        context["current_onlyPublic"] = self.request.GET.get("onlyPublic", False)
         requestUser = self.request.user
         return context
 
@@ -148,8 +148,8 @@ class GameCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Add the URL to the context
-        context['sampleStartingTemplateUrl'] = DefCbDefine_NewGameStartingSourceTemlateUrl
-        context['simpleStartingTemplateUrl'] = DefCbDefine_NewGameSimpleSourceTemlateUrl
+        context["sampleStartingTemplateUrl"] = DefCbDefine_NewGameStartingSourceTemlateUrl
+        context["simpleStartingTemplateUrl"] = DefCbDefine_NewGameSimpleSourceTemlateUrl
         return context
 
     def form_valid(self, form):
@@ -173,7 +173,7 @@ class GameCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         initial = super().get_initial()
         text = "// For a mostly blank starting game template see: " + DefCbDefine_NewGameStartingSourceTemlateUrl + "\n"
         text += "// For a short but fully working sample case see: " + DefCbDefine_NewGameSimpleSourceTemlateUrl + "\n"
-        initial['text'] = text + "\n\n"
+        initial["text"] = text + "\n\n"
         return initial
 
     def handle_no_permission(self):
@@ -199,9 +199,9 @@ class GameEditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         """Pass the owner_id to the form."""
         kwargs = super(GameEditView, self).get_form_kwargs()
         if self.object:  # Check if the object exists
-            kwargs['ownerId'] = self.object.owner.id
+            kwargs["ownerId"] = self.object.owner.id
         # request user
-        kwargs['requestUser'] = self.request.user  # Pass user to the form
+        kwargs["requestUser"] = self.request.user  # Pass user to the form
         return kwargs
     
     def get_context_data(self, **kwargs):
@@ -248,10 +248,10 @@ class GameEditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
                 # inject build request
                 retv = game.buildGame(self.request, "buildPreferred")
                 # redirect to generate page
-                url =  reverse_lazy("gameGenerate", kwargs={'slug':game.slug})
+                url =  reverse_lazy("gameGenerate", kwargs={"slug":game.slug})
                 return HttpResponseRedirect(url)
             # redirect to detail view (use reverse lazy in case slug has changed)
-            url =  reverse_lazy("gameDetail", kwargs={'slug':game.slug})
+            url =  reverse_lazy("gameDetail", kwargs={"slug":game.slug})
             return HttpResponseRedirect(url)
             #return response
 
@@ -443,11 +443,45 @@ class GameFilesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     # utility functions used by the superclass ListView
     # override get_queryset to customize the list of files returned
     def get_queryset(self):
+        sort = self.request.GET.get("sort", "name")
+
+        # basic query
+        qs = super(GameFilesListView, self).get_queryset()
+
         # get the game owning the files we are looking at; we can use the result of test_func so we dont query twice
         game = self.extra_context['game']
         gameId = game.pk
         # return the filter so our listview shows all files attached to this game
-        return GameFile.objects.filter(game=gameId)
+        qs = GameFile.objects.filter(game=gameId)
+
+        # new sortable
+        sort_map = {
+            "name": {"primary": "fileName"},
+            "date": {"primary": "fileDate", "descending": True},
+            "size": {"primary": "fileSize", "descending": True},
+        }
+        sort_field = sort_map.get(sort, {"primary":"name"})
+        #
+        primary = sort_field["primary"]
+        secondary = sort_field["secondary"] if ("secondary" in sort_field) else None
+        descending = sort_field["descending"] if ("descending" in sort_field) else False
+        #
+        if (secondary is None):
+            qs = qs.order_by(
+                OrderBy(F(primary), descending=descending, nulls_last=True)
+            )
+        else:
+            qs = qs.order_by(
+                OrderBy(NullIf(F(primary), Value("")), descending=descending, nulls_last=True),
+                OrderBy(NullIf(F(secondary), Value("")), nulls_last=True),
+            )
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["current_sort"] = self.request.GET.get("sort", "name")
+        requestUser = self.request.user
+        return context
 
     # is user allowed to look at the file list for this game?
     def test_func(self):

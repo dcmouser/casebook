@@ -59,6 +59,7 @@ tlmgr install collection-fontsrecommended
 # For the doc target and testing l3doc
 # PACKAGE INSTALL LIST UPDATED 10/25/24 - NOTE THIS REQUIRED LOTS OF TRIAL AND ERROR BUILDING LOCAL HLWEB_PERSONAL and testing a build of wrongbook_partial, and then checking log for latex build errors about missing sty files that required manually adding package
 # for some reason accessory packages with sty files are not being found during this tlmgr install, so i have to search web for what packages have them, etc.
+# See casebookPreamblePackages.latex for where these are referenced with comments as to their purpose
 tlmgr install \
   xelatex \
   xetex \
@@ -142,8 +143,8 @@ tlmgr install \
 	ulem \
 	soul \
 	wrapfig \
-	tabularx
-
+	tabularx \
+	footmisc
 
 
 # Keep no backups (not required, simply makes cache bigger)

@@ -476,6 +476,8 @@ def buildFunctionList():
             CbParam("scale", "Scaled for embed", None, True, AstValNumber, True),
             CbParam("pageStyle", "Page style to use for the page (use 'empty' to hide footer)", "", False, AstValString, True),            
             CbParam("toc", "Table of contents label", None, True, AstValString, True),
+            CbParam("layout", "Layout style", None, True, ["default","bookletNonStitched", "bookletStitched"], True),
+            #CbParam("layoutOptions", "Layout options", None, True, AstValString, True),
         ],
         "text", None, None,
         funcEmbedFile
@@ -2303,6 +2305,8 @@ def funcEmbedFile(rmode, env, entryp, leadp, astloc, args, customData, funcName,
     #pagenum = args["pagenum"].getWrapped()
     pagenum = True
     pageStyle = args["pageStyle"].getWrapped()
+    layout = args["layout"].getWrapped()
+    layoutOptions = args["layout"].getWrapped()
 
     # get image import helper, and try to find image first in game-specicific list then fallback to shared
     [fileFullPath, warningText] = env.locateManagerFileWithUseNote(env.calcManagerIdListPdf(), path, "Including pdf file", "embedPdf", leadp, env, astloc, False)
@@ -2319,7 +2323,11 @@ def funcEmbedFile(rmode, env, entryp, leadp, astloc, args, customData, funcName,
         for pagei in pagesList:
             pagei = pagei.strip()
             if (pagei!=""):
+                # just add it first
                 pagesOut.append(pagei)
+            # now check that its legal
+            if (pagei=="{}"):
+                continue
             if (re.match(r"[\d]*", pagei) is not None):
                 continue
             elif (re.match(r"[\d]+\-[\d]+", pagei) is not None):
@@ -2332,10 +2340,27 @@ def funcEmbedFile(rmode, env, entryp, leadp, astloc, args, customData, funcName,
         #matches = re.match(validPagesRegex, pages)
         #if (matches is None):
         #    raise makeJriException("In func {}, pages arg must be a comma separated list of numbers; got ({}).".format(funcName, pages), astloc)
-        extras.append("pages=" + pages)
+        if len(pagesOut)>0:
+            pageStr = "pages={" + ",".join(pagesOut) + "}"
+            extras.append(pageStr)
 
     if (scale is not None):
         extras.append("scale=" + convertEscapeUnsafePlainTextToLatex(scale))
+
+    if (layoutOptions is not None):
+        layoutOptionList = layoutOptions.split("|")
+    else:
+        layoutOptionList = []
+
+    if (layout is not None) and (layout != "default"):
+        if (layout=="bookletStitched"):
+            #extras.append("nup=1x2,landscape,signature=4")
+            extras.append("nup=1x2,landscape,booklet=true")
+        elif (layout=="bookletNonStitched"):
+            extras.append("nup=1x2,landscape")
+        else:
+            makeJriException("In func {}, unknown layout arg '{}'.".format(funcName, layout), astloc)
+
 
     # add page numbers; this might only work when scale < 0.95 or so
     if (pageStyle!=""):

@@ -1,0 +1,4 @@
+// Police Labs Reference (note this should align with Research Guide)
+//* $referDb("Coroner & medical examination: NYPD - Chief Medical Examiner")
+* $referDb("Crime scene analysis: NYPD - Crime Scene Analysis Lab")
+* $referDb("Bombs and Explosives: NYPD - Bomb Squad")
