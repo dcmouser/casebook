@@ -5,8 +5,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import HttpResponseRedirect
 from django.http import HttpResponse
 from django.shortcuts import resolve_url
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.contrib.auth.views import redirect_to_login
+from django.contrib.auth import get_user_model
+from django.views import View
 
 from lib.jr import jrdfuncs
 
@@ -71,7 +73,7 @@ class ProfileView(UserPassesTestMixin, DetailView):
 # helpers
 def getExplicitOrDefaultToLoggedInUser(view):
         # Here w'll retrieve the correct object to update
-        
+
         explicitPk = view.kwargs.get("pk", None)
         if (explicitPk is None):
              # defualt logged in user
@@ -81,7 +83,7 @@ def getExplicitOrDefaultToLoggedInUser(view):
                 return [None, errorResponse]
             # logged in user
             return [user, None]
-        
+
         # try to lookup user explicitly
         studiedUserPk = int(explicitPk)
         try:
@@ -104,3 +106,23 @@ def redirectToLoginFirst(view):
         resolved_login_url,
         view.get_redirect_field_name(),
     )
+
+
+class ExportEmailsView(UserPassesTestMixin, View):
+    """
+    Return a dictionary of user pks and email addresses, filtered by the given
+    group ID.
+    """
+    def test_func(self):
+        return self.request.user.is_staff
+
+    def get(self, request, group_id = 0):
+        queryset = get_user_model().objects.all()
+        if group_id:
+            queryset = queryset.filter(groups__id__exact=group_id).distinct()
+        queryset = queryset.values('pk', 'email')
+        emails = {}
+        for item in queryset:
+            emails[item['pk']] = item['email']
+
+        return JsonResponse(emails)
